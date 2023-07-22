@@ -94,7 +94,6 @@ export default function SignInSide({
       const resp = await createUserWithEmailAndPassword(FirebaseAuth, email, password);
       if (resp.user) {
         localStorage.setItem('user', JSON.stringify(resp.user));
-        handleClose()
       }
     } catch (e) {
       switch (e.code) {

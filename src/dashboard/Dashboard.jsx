@@ -21,6 +21,38 @@ import { mainListItems, secondaryListItems } from './listItems';
 import PanelChart from './PanelChart';
 import Deposits from './Deposits';
 import Orders from './Orders';
+import { Avatar } from '@mui/material';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      animation: 'ripple 1.2s infinite ease-in-out',
+      border: '1px solid currentColor',
+      content: '""',
+    },
+  },
+  '@keyframes ripple': {
+    '0%': {
+      transform: 'scale(.8)',
+      opacity: 1,
+    },
+    '100%': {
+      transform: 'scale(2.4)',
+      opacity: 0,
+    },
+  },
+}));
 
 function Copyright(props) {
   return (
@@ -86,8 +118,32 @@ const defaultTheme = createTheme();
 
 export default function Dashboard() {
   const [open, setOpen] = React.useState(true);
+
+  
+  React.useEffect(() => {
+    const handleResize = () => {
+      const isLaptop = window.innerWidth >= 1024; // Cambiar este valor según tus necesidades
+      setOpen(isLaptop);
+    };
+    handleResize(); // Llamamos a la función al inicio para establecer el estado en función del tamaño inicial de la ventana.
+    window.addEventListener('resize', handleResize); // Agregamos un event listener para detectar cambios de tamaño en la ventana.
+    return () => {
+      window.removeEventListener('resize', handleResize); // Limpiamos el event listener al desmontar el componente.
+    };
+  }, []);
+
   const toggleDrawer = () => {
     setOpen(!open);
+  };
+
+  const [menuOpen, setMenuOpen] = React.useState(null);
+
+  const handleMenuOpen = (event) => {
+    setMenuOpen(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setMenuOpen(null);
   };
 
   return (
@@ -121,11 +177,45 @@ export default function Dashboard() {
             >
               Dashboard
             </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
+            <>
+              <IconButton color="inherit" onClick={handleMenuOpen}>
+                <Badge badgeContent={4} color="secondary">
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
+
+              <IconButton color="inherit" onClick={handleMenuOpen} sx={{ marginLeft: 2 }}>
+                <StyledBadge
+                  overlap="circular"
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                  variant="dot"
+                  
+                >
+                  <Avatar alt="Remy Sharp" sx={{ width: 24, height: 24 }} src="/static/images/avatar/1.jpg" />
+                </StyledBadge>
+              </IconButton>
+
+
+              <Menu
+                anchorEl={menuOpen}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(menuOpen)}
+                onClose={handleMenuClose}
+                sx={{ top: 38 }}
+              >
+                <MenuItem onClick={handleMenuClose}>Notificación 1</MenuItem>
+                <MenuItem onClick={handleMenuClose}>Notificación 2</MenuItem>
+                <MenuItem onClick={handleMenuClose}>Notificación 3</MenuItem>
+              </Menu>
+
+            </>
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
